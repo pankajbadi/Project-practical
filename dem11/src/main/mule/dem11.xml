@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="c60fddfd-0098-4d56-b3f8-373922388203" >
+		<salesforce:cached-basic-connection username="pankajbadi92@gmail.com" password="Pankaj@7" securityToken="4FCWEb0Zsay9QIbQALElfxb9l" />
+	</salesforce:sfdc-config>
+	<flow name="dem11Flow" doc:id="8f833d2c-a3ae-41e9-b559-33b3dbca87a9" >
+		<salesforce:query doc:name="Query" doc:id="21d48954-1633-430e-bc4a-25b3480a82d6" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query >SELECT address__c,gmail__c,Name,phone__c FROM cust__c</salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="6be6de15-7dab-436c-a137-de71bdbf1b46" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="dem11Flow1" doc:id="e0a5b6d5-cba2-4b92-b5cf-f9a6cd2225b8" >
+		<salesforce:create-bulk doc:name="Create bulk" doc:id="e823ba76-7dbc-4a46-83af-ba3e08d7d4aa" config-ref="Salesforce_Config" type="cust__c">
+			<salesforce:objects ><![CDATA[#[SELECT address__c,gmail__c,Name,phone__c FROM cust__c]]]></salesforce:objects>
+		</salesforce:create-bulk>
+		<ee:transform doc:name="Transform Message" doc:id="65bc5dd6-6443-457e-9c25-b9418366b259" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
