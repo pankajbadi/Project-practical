@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="00aa03f2-bdc9-47a7-beca-b50c55a74eaf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="feaecc4a-6144-42de-b79c-46ac8f366348" >
+		<s3:basic-connection accessKey=" AKIAJWKZDPLHRO4WPP7A" secretKey=" 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" region="US-east"/>
+	</s3:config>
+	<flow name="awsFlow" doc:id="62fcc841-6c47-4fd3-896f-4ead36cad1bd" >
+		<http:listener doc:name="Listener" doc:id="f7846f74-ea12-4f89-9535-fbac8d5c06cf" config-ref="HTTP_Listener_config" path="/bucket" responseStreamingMode="NEVER"/>
+		<s3:create-bucket doc:id="76909eb2-0fa8-4b9c-8b92-024a63bc0d76" config-ref="Amazon_S3_Configuration" bucketName="${config.bucket}"/>
+		<set-payload value="#['bucket is created']" doc:name="Set Payload" doc:id="aa4ed9a5-d578-41f2-9843-c2776cee715f" />
+	</flow>
+	<flow name="awsFlow1" doc:id="a7400e2a-853d-474a-992e-fa17b99b7e51" initialState="started">
+		<http:listener doc:name="Listener" doc:id="6a4302f5-0757-4c3c-953f-cf0e07061407" config-ref="HTTP_Listener_config" path="/object" allowedMethods="POST"/>
+		<s3:create-object doc:name="Create object" doc:id="a41b2baa-4bd7-418e-9e13-214fedf2ad70" config-ref="Amazon_S3_Configuration" key="JsontextObj" bucketName="${config.bucket}"/>
+		<set-payload value="#['object is created']" doc:name="Set Payload" doc:id="e8654885-14df-4b57-9578-c11545fafb95" />
+	</flow>
+</mule>
